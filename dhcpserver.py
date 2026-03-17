@@ -24,6 +24,7 @@ class bcolors:
 
 class DHCPListener:
     """DHCP Listener"""
+
     # Real router
     __gateway_ip: str
     __gateway_mac: str

