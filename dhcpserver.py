@@ -290,34 +290,34 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--command", required=False)
     args = parser.parse_args()
 
-    DHCPListener = DHCPListener()
+    dhcp_listener = DHCPListener()
     if args.dns is not None:
-        DHCPListener.set_dns(args.dns)
+        dhcp_listener.set_dns(args.dns)
 
     if args.gateway is not None:
-        DHCPListener.set_gateway_ip(args.gateway)
+        dhcp_listener.set_gateway_ip(args.gateway)
 
-    DHCPListener.set_subnet_mask(args.netmask)
+    dhcp_listener.set_subnet_mask(args.netmask)
 
     if args.iprange is not None:
-        DHCPListener.set_ip_pool(args.iprange)
+        dhcp_listener.set_ip_pool(args.iprange)
 
     if args.lease_time is not None:
-        DHCPListener.set_lease_time(args.lease_time)
+        dhcp_listener.set_lease_time(args.lease_time)
 
     if args.renewal_time is not None:
-        DHCPListener.set_renewal_time(args.renewal_time)
+        dhcp_listener.set_renewal_time(args.renewal_time)
 
     if args.rebinding_time is not None:
-        DHCPListener.set_rebinding_time(args.rebinding_time)
+        dhcp_listener.set_rebinding_time(args.rebinding_time)
 
     if args.command is not None:
-        DHCPListener.set_command(args.command)
+        dhcp_listener.set_command(args.command)
 
     print("DHCP server in listening...")
     if args.interface is None:
-        scapy.sendrecv.sniff(filter="udp and port 67", prn=DHCPListener.listener)
+        scapy.sendrecv.sniff(filter="udp and port 67", prn=dhcp_listener.listener)
     else:
         scapy.sendrecv.sniff(
-            iface=args.interface, filter="udp and port 67", prn=DHCPListener.listener
+            iface=args.interface, filter="udp and port 67", prn=dhcp_listener.listener
         )
