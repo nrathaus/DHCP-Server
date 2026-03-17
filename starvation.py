@@ -54,7 +54,7 @@ if __name__ == "__main__":
         description="This script is a DHCP starvation attack."
     )
     parser.add_argument(
-        "-s", "--secondDelay", required=False, help="Seconds to delay the function"
+        "-s", "--second_delay", required=False, help="Seconds to delay the function"
     )
     parser.add_argument(
         "-i",
@@ -72,17 +72,16 @@ if __name__ == "__main__":
 
     print("Starve...")
 
-    if args.secondDelay is None:
-        seconds = 0
-    else:
-        seconds = args.secondDelay
-    if args.iteration is None:
-        iteration = 100
-    else:
+    seconds = 0
+    if args.second_delay is not None:
+        seconds = args.second_delay
+
+    iteration = 100
+    if args.iteration is not None:
         iteration = args.iteration
-    if args.forks is None:
-        forks = 4
-    else:
+
+    forks = 4
+    if args.forks is not None:
         forks = args.forks
 
     s = Starve()
